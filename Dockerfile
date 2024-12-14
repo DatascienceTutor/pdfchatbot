@@ -1,5 +1,8 @@
 # Use the Python 3.10 slim image as the base
-FROM python:3.10.6-slim
+FROM python:3.10-slim
+
+# Ensure the system uses the updated SQLite version
+RUN ldconfig
 
 # Set the working directory inside the container
 WORKDIR /app
