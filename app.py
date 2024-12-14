@@ -52,7 +52,7 @@ def get_vectorstore(text_chunks):
 def main():
     st.set_page_config(page_title="PDF Chatbot Application",page_icon=":books:")
     st.title("PDF Chatbot :books:")
-    st.markdown("### Reach out to me at **mvsreejith0@gmail.com** to understand more.")
+    st.markdown("### Reach out to me at **mvsreejith2010@gmail.com** to understand more.")
 
     prompt=st.chat_input("Ask your question....")
 
