@@ -2,7 +2,6 @@ import os
 import shutil
 import openai
 import tiktoken
-import chromadb
 from dotenv import load_dotenv
 
 from langchain_community.document_loaders import OnlinePDFLoader,UnstructuredPDFLoader,PyPDFLoader
