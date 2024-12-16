@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from langchain_community.document_loaders import OnlinePDFLoader,UnstructuredPDFLoader,PyPDFLoader
 from langchain_openai import OpenAIEmbeddings
 from langchain_openai import ChatOpenAI
+import chromadb
 from langchain_community.vectorstores import Chroma
 from langchain.text_splitter import TokenTextSplitter,CharacterTextSplitter
 from langchain.memory import ConversationBufferMemory
@@ -41,12 +42,12 @@ def get_vectorstore(text_chunks):
     if os.path.exists(chr_directory):
         shutil.rmtree(chr_directory)
 
-    embeddings=OpenAIEmbeddings()
+    embeddings=OpenAIEmbeddings(model="text-embedding-ada-002")
     vectDB=Chroma.from_texts(text_chunks,
                                 embeddings,
                                 collection_name=collection_name,
                                 persist_directory=chr_directory)
-    vectDB.persist()
+    chromadb.api.client.SharedSystemClient.clear_system_cache()
     return vectDB
 
 def main():
@@ -101,11 +102,12 @@ def main():
             with st.spinner("Thinking..."):
                 memory=ConversationBufferMemory(memory_key="chat_history",
                                     return_messages=True)
-                chatmodel=ChatOpenAI(temperature=0,model_name="gpt-3.5-turbo",streaming=True)
+                chatmodel=ChatOpenAI(temperature=0,model_name="gpt-4",streaming=True)
                 chatQA=ConversationalRetrievalChain.from_llm (chatmodel,
                                                             st.session_state['vectorstore'].as_retriever(),
                                                             memory=memory
                                                             )
+                chromadb.api.client.SharedSystemClient.clear_system_cache()
                 response=chatQA({"question": prompt, "chat_history": memory.load_memory_variables({})["chat_history"]})
                 assistant_message = response["answer"]
                 # st.write(assistant_message)
