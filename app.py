@@ -13,6 +13,7 @@ from langchain.text_splitter import TokenTextSplitter,CharacterTextSplitter
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from PyPDF2 import PdfReader
+from langchain.prompts import PromptTemplate
 
 import streamlit as st
 
@@ -103,9 +104,12 @@ def main():
                 memory=ConversationBufferMemory(memory_key="chat_history",
                                     return_messages=True)
                 chatmodel=ChatOpenAI(temperature=0,model_name="gpt-4",streaming=True)
+                custom_prompt = PromptTemplate( input_variables=["context", "question"],
+                                                template="Use the following context to answer the question: {context}\n\nQuestion: {question}\nAnswer:")
                 chatQA=ConversationalRetrievalChain.from_llm (chatmodel,
                                                             st.session_state['vectorstore'].as_retriever(),
-                                                            memory=memory
+                                                            memory=memory,
+                                                            combine_docs_chain_kwargs={"prompt": custom_prompt}
                                                             )
                 chromadb.api.client.SharedSystemClient.clear_system_cache()
                 response=chatQA({"question": prompt, "chat_history": memory.load_memory_variables({})["chat_history"]})
